@@ -3,310 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spartan Cheats - Acesso Restrito</title>
+    <title>Admin - Gerador de Keys Spartan</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
         
-        body {
-            background-color: #020617;
-            color: #f8fafc;
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-        }
-
-        #starCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        .glass-card {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .gradient-text {
-            background: linear-gradient(90deg, #38bdf8, #818cf8, #c084fc);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: shine 3s linear infinite;
-        }
-
-        @keyframes shine {
-            to { background-position: 200% center; }
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.5);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 100;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        #loginScreen {
-            display: flex;
-            position: fixed;
-            inset: 0;
-            z-index: 200;
-            background: #020617;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #mainContent {
-            display: none;
-        }
+        body { background-color: #020617; color: #f8fafc; font-family: 'Inter', sans-serif; overflow: hidden; }
+        #starCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        .glass-card { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .gradient-text { background: linear-gradient(90deg, #38bdf8, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .btn-admin { background: linear-gradient(135deg, #ef4444, #b91c1c); transition: all 0.3s ease; }
+        .btn-admin:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); }
+        
+        /* Estilo da Tabela */
+        .key-row:nth-child(even) { background: rgba(255,255,255,0.02); }
+        .scroll-custom::-webkit-scrollbar { width: 6px; }
+        .scroll-custom::-webkit-scrollbar-track { background: transparent; }
+        .scroll-custom::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
     </style>
 </head>
 <body class="p-4 min-h-screen flex flex-col items-center">
 
     <canvas id="starCanvas"></canvas>
 
-    <!-- Tela de Login -->
-    <div id="loginScreen">
-        <div class="glass-card w-full max-w-sm p-8 rounded-3xl shadow-2xl border-blue-500/30 border text-center">
-            <h1 class="text-3xl font-extrabold gradient-text uppercase tracking-tighter mb-2">Spartan Cheats</h1>
-            <p class="text-slate-400 text-xs mb-8 uppercase tracking-widest">Painel de Acesso VIP</p>
-            
+    <header class="w-full max-w-4xl flex justify-between items-center my-8">
+        <div>
+            <h1 class="text-2xl font-black gradient-text uppercase tracking-tighter">Spartan Admin</h1>
+            <p class="text-slate-500 text-xs uppercase tracking-widest">Gerador Central de Licenças</p>
+        </div>
+        <div class="text-right">
+            <span id="statusBadge" class="bg-yellow-500/10 text-yellow-500 text-[10px] px-3 py-1 rounded-full border border-yellow-500/20 uppercase font-bold">Modo Offline</span>
+        </div>
+    </header>
+
+    <main class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Coluna de Geração -->
+        <section class="glass-card p-6 rounded-3xl h-fit border-red-500/20">
+            <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-plus-circle text-red-500"></i> Nova Key
+            </h2>
             <div class="space-y-4">
-                <div class="relative">
-                    <i class="fas fa-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
-                    <input type="password" id="accessKey" placeholder="INSIRA SUA KEY" 
-                           class="w-full bg-slate-900/50 border border-slate-700 rounded-xl py-4 pl-12 pr-4 outline-none focus:border-blue-500 transition-all text-center tracking-widest font-bold">
+                <div>
+                    <label class="text-[10px] text-slate-500 uppercase font-bold mb-1 block">Prefixo</label>
+                    <input type="text" id="prefix" value="SPARTAN" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 outline-none focus:border-red-500 transition-all text-sm uppercase">
                 </div>
-                <button onclick="verifyKey()" class="w-full btn-primary py-4 rounded-xl font-black text-white uppercase tracking-widest">
-                    AUTENTICAR
+                <div>
+                    <label class="text-[10px] text-slate-500 uppercase font-bold mb-1 block">Duração</label>
+                    <select id="duration" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 outline-none focus:border-red-500 transition-all text-sm">
+                        <option value="7">7 Dias (Semanal)</option>
+                        <option value="30">30 Dias (Mensal)</option>
+                        <option value="999">Vitalício</option>
+                    </select>
+                </div>
+                <button onclick="generateAndSave()" class="w-full btn-admin py-4 rounded-xl font-bold uppercase tracking-widest text-sm">
+                    Gerar Licença
                 </button>
             </div>
-            <p class="mt-6 text-[10px] text-slate-500 uppercase">Acesso monitorado por hardware ID</p>
-        </div>
-    </div>
+        </section>
 
-    <!-- Conteúdo Principal -->
-    <div id="mainContent" class="w-full flex flex-col items-center">
-        <header class="w-full max-w-md text-center my-8">
-            <h1 class="text-3xl font-bold gradient-text uppercase tracking-widest">Spartan Cheats</h1>
-            <p class="text-slate-400 text-sm mt-2">O melhor gerador de sensibilidade mobile</p>
-        </header>
-
-        <main class="w-full max-w-md space-y-6 mb-10">
-            
-            <!-- Formulário Principal -->
-            <section class="glass-card p-6 rounded-2xl shadow-xl">
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-2 text-slate-300">Marca/Modelo do Celular</label>
-                    <input type="text" id="deviceModel" placeholder="Samsung S23, iPhone 14..." 
-                           class="w-full bg-slate-800/50 border border-slate-700 rounded-lg p-3 outline-none focus:border-blue-500 transition-colors">
-                </div>
-                
-                <button onclick="generateSensi()" class="w-full btn-primary py-3 rounded-lg font-bold text-white uppercase tracking-wider">
-                    <i class="fas fa-crosshairs mr-2"></i> Gerar Sensibilidade
-                </button>
-            </section>
-
-            <!-- Resultados -->
-            <section id="resultCard" class="glass-card p-6 rounded-2xl shadow-xl hidden">
-                <h2 class="text-center font-bold text-blue-400 mb-4 border-b border-slate-700 pb-2">SENSI PARA: <span id="displayDevice" class="text-white uppercase"></span></h2>
-                
-                <div class="grid grid-cols-2 gap-4 text-center">
-                    <div class="bg-slate-800/50 p-3 rounded-lg">
-                        <p class="text-xs text-slate-400 uppercase">Geral</p>
-                        <p id="vGeral" class="text-xl font-bold text-white">--</p>
-                    </div>
-                    <div class="bg-slate-800/50 p-3 rounded-lg">
-                        <p class="text-xs text-slate-400 uppercase">Ponto Vermelho</p>
-                        <p id="vRed" class="text-xl font-bold text-white">--</p>
-                    </div>
-                    <div class="bg-slate-800/50 p-3 rounded-lg">
-                        <p class="text-xs text-slate-400 uppercase">Mira 2x</p>
-                        <p id="v2x" class="text-xl font-bold text-white">--</p>
-                    </div>
-                    <div class="bg-slate-800/50 p-3 rounded-lg">
-                        <p class="text-xs text-slate-400 uppercase">Mira 4x</p>
-                        <p id="v4x" class="text-xl font-bold text-white">--</p>
-                    </div>
-                    <div class="bg-slate-800/50 p-3 rounded-lg col-span-2 border border-blue-500/30">
-                        <p class="text-xs text-slate-400 uppercase">Configuração de DPI / Botão</p>
-                        <p id="vDpi" class="text-lg font-bold text-yellow-400">--</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Barra de Info -->
-            <section class="glass-card p-6 rounded-2xl space-y-4">
-                <div class="flex items-center justify-between border-b border-slate-700 pb-4">
-                    <div>
-                        <p class="text-xs text-slate-400">Developer</p>
-                        <p class="font-semibold text-blue-400">spartan cheats</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-xs text-slate-400">Key de ativação</p>
-                        <p class="font-semibold text-green-400">Cliente vip</p>
-                    </div>
-                </div>
-
-                <a href="https://discord.gg/tVXPhakVUb" target="_blank" class="flex items-center justify-center w-full bg-[#5865F2] hover:bg-[#4752c4] text-white py-3 rounded-lg font-bold transition-all">
-                    <i class="fab fa-discord mr-2"></i> ADQUIRIR AUXÍLIO 100% CAPA
-                </a>
-
-                <button onclick="toggleModal('modalDicas')" class="w-full border border-slate-600 hover:bg-slate-700 text-slate-300 py-3 rounded-lg font-medium transition-all">
-                    <i class="fas fa-bolt mr-2 text-yellow-500"></i> Dicas de Otimização
-                </button>
-            </section>
-        </main>
-    </div>
-
-    <!-- Modal de Dicas -->
-    <div id="modalDicas" class="modal">
-        <div class="glass-card w-full max-w-sm m-4 p-6 rounded-2xl border-yellow-500/30 border">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold text-yellow-400 uppercase">Otimização</h3>
-                <button onclick="toggleModal('modalDicas')" class="text-slate-400 hover:text-white">
-                    <i class="fas fa-times"></i>
-                </button>
+        <!-- Coluna de Lista/Gestão -->
+        <section class="glass-card p-6 rounded-3xl md:col-span-2 flex flex-col h-[500px]">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-lg font-bold flex items-center gap-2">
+                    <i class="fas fa-list text-blue-500"></i> Keys Ativas
+                </h2>
+                <button onclick="clearAll()" class="text-[10px] text-slate-500 hover:text-red-400 uppercase font-bold">Limpar Tudo</button>
             </div>
-            <ul class="space-y-4 text-sm text-slate-300">
-                <li class="flex gap-3">
-                    <i class="fas fa-check-circle text-green-500 mt-1"></i>
-                    <span><strong>Limpeza de Cache:</strong> Limpe o cache do jogo para estabilizar os frames.</span>
-                </li>
-                <li class="flex gap-3">
-                    <i class="fas fa-check-circle text-green-500 mt-1"></i>
-                    <span><strong>Velocidade do Ponteiro:</strong> Deixe no máximo e volte 2 casas para precisão.</span>
-                </li>
-                <li class="flex gap-3">
-                    <i class="fas fa-check-circle text-green-500 mt-1"></i>
-                    <span><strong>Escala de Animação:</strong> Desative nas opções de desenvolvedor.</span>
-                </li>
-            </ul>
-            <button onclick="toggleModal('modalDicas')" class="w-full mt-6 bg-slate-700 py-2 rounded-lg font-bold uppercase">Fechar</button>
-        </div>
-    </div>
 
-    <!-- Alertas -->
-    <div id="alertBox" class="fixed top-4 left-1/2 -translate-x-1/2 bg-red-600 text-white px-8 py-3 rounded-xl shadow-2xl text-sm font-bold hidden z-[300]">
-        MENSAGEM DE ERRO
-    </div>
+            <div class="flex-1 overflow-y-auto scroll-custom pr-2">
+                <table class="w-full text-left">
+                    <thead class="text-slate-500 text-[10px] uppercase border-b border-slate-800">
+                        <tr>
+                            <th class="pb-3 pl-2">Código</th>
+                            <th class="pb-3 text-center">Expiração</th>
+                            <th class="pb-3 text-right pr-2">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="keyList" class="text-sm">
+                        <!-- Keys aparecerão aqui -->
+                    </tbody>
+                </table>
+                <div id="emptyMsg" class="h-full flex flex-col items-center justify-center text-slate-600 italic py-20">
+                    <i class="fas fa-key mb-2 text-2xl opacity-20"></i>
+                    <p>Nenhuma key gerada ainda</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-white text-black px-6 py-3 rounded-full font-bold text-sm shadow-2xl hidden z-50"></div>
 
     <script>
-        // --- Sistema de Estrelas Animadas ---
+        // --- Estrelas Animadas ---
         const canvas = document.getElementById('starCanvas');
         const ctx = canvas.getContext('2d');
         let stars = [];
+        function initStars() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; stars = []; for (let i = 0; i < 150; i++) stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, size: Math.random() * 2, speed: Math.random() * 0.5 + 0.2, hue: Math.random() * 360 }); }
+        function drawStars() { ctx.clearRect(0, 0, canvas.width, canvas.height); stars.forEach(s => { s.y -= s.speed; s.hue += 1; if (s.y < 0) s.y = canvas.height; ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2); ctx.fillStyle = `hsla(${s.hue}, 70%, 70%, 0.4)`; ctx.fill(); }); requestAnimationFrame(drawStars); }
+        initStars(); drawStars();
 
-        function initStars() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            stars = [];
-            for (let i = 0; i < 150; i++) {
-                stars.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    size: Math.random() * 2,
-                    speed: Math.random() * 0.5 + 0.2,
-                    hue: Math.random() * 360
+        // --- Gestão de Dados ---
+        let keys = JSON.parse(localStorage.getItem('spartan_keys') || '[]');
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.remove('hidden');
+            setTimeout(() => t.classList.add('hidden'), 2000);
+        }
+
+        function generateAndSave() {
+            const prefix = document.getElementById('prefix').value.trim() || "SPARTAN";
+            const duration = document.getElementById('duration').value;
+            const code = prefix.toUpperCase() + "-" + Math.random().toString(36).substr(2, 9).toUpperCase();
+            
+            const newKey = {
+                code: code,
+                duration: duration,
+                created: new Date().toLocaleDateString(),
+                status: 'disponível'
+            };
+
+            keys.unshift(newKey);
+            save();
+            render();
+            showToast("KEY GERADA COM SUCESSO!");
+        }
+
+        function deleteKey(index) {
+            keys.splice(index, 1);
+            save();
+            render();
+        }
+
+        function copyKey(code) {
+            const el = document.createElement('textarea');
+            el.value = code;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            showToast("COPIADO: " + code);
+        }
+
+        function save() {
+            localStorage.setItem('spartan_keys', JSON.stringify(keys));
+        }
+
+        function clearAll() {
+            if(confirm("Deseja apagar todas as keys?")) {
+                keys = [];
+                save();
+                render();
+            }
+        }
+
+        function render() {
+            const list = document.getElementById('keyList');
+            const empty = document.getElementById('emptyMsg');
+            list.innerHTML = '';
+
+            if (keys.length === 0) {
+                empty.classList.remove('hidden');
+            } else {
+                empty.classList.add('hidden');
+                keys.forEach((k, index) => {
+                    const row = document.createElement('tr');
+                    row.className = 'key-row border-b border-slate-800/50';
+                    row.innerHTML = `
+                        <td class="py-4 pl-2 font-mono text-blue-400 font-bold tracking-tighter">${k.code}</td>
+                        <td class="py-4 text-center text-slate-400 text-xs">${k.duration == 999 ? 'VITALÍCIO' : k.duration + ' DIAS'}</td>
+                        <td class="py-4 text-right pr-2">
+                            <div class="flex justify-end gap-2">
+                                <button onclick="copyKey('${k.code}')" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors">
+                                    <i class="fas fa-copy text-[10px]"></i>
+                                </button>
+                                <button onclick="deleteKey(${index})" class="w-8 h-8 rounded-lg bg-red-900/20 text-red-500 hover:bg-red-500 hover:text-white transition-colors">
+                                    <i class="fas fa-trash text-[10px]"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    list.appendChild(row);
                 });
             }
         }
 
-        function drawStars() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            stars.forEach(s => {
-                s.y -= s.speed;
-                s.hue += 1;
-                if (s.y < 0) s.y = canvas.height;
-                
-                ctx.beginPath();
-                ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-                ctx.fillStyle = `hsla(${s.hue}, 70%, 70%, 0.8)`;
-                ctx.fill();
-            });
-            requestAnimationFrame(drawStars);
-        }
-
-        window.addEventListener('resize', initStars);
-        initStars();
-        drawStars();
-
-        // --- Lógica do App ---
-
-        function showAlert(msg) {
-            const box = document.getElementById('alertBox');
-            box.innerText = msg;
-            box.classList.remove('hidden');
-            setTimeout(() => box.classList.add('hidden'), 3000);
-        }
-
-        function verifyKey() {
-            const key = document.getElementById('accessKey').value.trim();
-            if (key === "Clientevip") {
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('mainContent').style.display = 'flex';
-            } else {
-                showAlert("KEY INVÁLIDA OU EXPIRADA!");
-            }
-        }
-
-        function toggleModal(id) {
-            document.getElementById(id).classList.toggle('active');
-        }
-
-        function generateSensi() {
-            const model = document.getElementById('deviceModel').value.trim();
-            
-            if (model === "") {
-                showAlert("DIGITE O MODELO DO APARELHO!");
-                return;
-            }
-
-            // Algoritmo de cálculo baseado no modelo para parecer real
-            const hash = model.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-            
-            // Valores calculados
-            const geral = 94 + (hash % 6); // 94-100
-            const red = 88 + (hash % 12);  // 88-100
-            const mira2x = 90 + (hash % 10); // 90-100
-            const mira4x = 92 + (hash % 8);  // 92-100
-            
-            const dpi = 500 + (hash % 300);
-            const btn = 45 + (hash % 10);
-
-            document.getElementById('displayDevice').innerText = model;
-            document.getElementById('vGeral').innerText = geral;
-            document.getElementById('vRed').innerText = red;
-            document.getElementById('v2x').innerText = mira2x;
-            document.getElementById('v4x').innerText = mira4x;
-            document.getElementById('vDpi').innerText = `DPI: ${dpi} | BOTÃO: ${btn}%`;
-
-            const card = document.getElementById('resultCard');
-            card.classList.remove('hidden');
-            card.scrollIntoView({ behavior: 'smooth' });
-        }
+        render();
     </script>
 </body>
 </html>
