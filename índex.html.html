@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spartan UI - Pro Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d0118;
+            --card-bg: #06010d;
+            --primary-glow: #3c00c7;
+            --accent-purple: #6c31f4;
+            --accent-blue: #2a69ff;
+            --text-muted: #a0a0a0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: white;
+            overflow: hidden;
+        }
+
+        .main-container {
+            background-color: var(--card-bg);
+            border: 3px solid var(--primary-glow);
+            border-radius: 40px;
+            width: 380px;
+            padding: 40px 20px;
+            box-shadow: 0 0 30px rgba(60, 0, 199, 0.3);
+            position: relative;
+        }
+
+        /* Auth Screen */
+        #auth-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .input-key {
+            width: 100%;
+            background: #1a0b2e;
+            border: 1px solid var(--primary-glow);
+            border-radius: 12px;
+            padding: 15px;
+            color: white;
+            text-align: center;
+            margin: 20px 0;
+            outline: none;
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
+
+        /* Panel Elements */
+        .hidden { display: none !important; }
+
+        .header-title {
+            text-align: center;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .tab-active { background: linear-gradient(90deg, var(--accent-purple), var(--accent-blue)); }
+        .tab-inactive { background-color: #1a0b2e; color: var(--text-muted); }
+
+        /* Interatividade das Opções */
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .custom-check {
+            width: 20px;
+            height: 20px;
+            background-color: #fff;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+
+        .checkbox-item.active .custom-check {
+            background-color: var(--accent-blue);
+            box-shadow: 0 0 10px var(--accent-blue);
+        }
+
+        /* Radio Buttons */
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .radio-circle {
+            width: 18px;
+            height: 18px;
+            border: 2px solid white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .radio-circle.selected { border-color: var(--accent-blue); }
+        .radio-dot { width: 10px; height: 10px; background-color: var(--accent-blue); border-radius: 50%; display: none; }
+        .radio-circle.selected .radio-dot { display: block; }
+
+        .btn-inject {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(180deg, #1a0b2e 0%, #06010d 100%);
+            border: 1px solid var(--primary-glow);
+            border-radius: 15px;
+            color: white;
+            font-weight: 800;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-inject:active { transform: scale(0.95); background: #2a104c; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .info-box { background: #11061f; border-radius: 15px; padding: 20px; border: 1px solid #2a104c; }
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; }
+        .status-on { color: #00ff88; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <!-- TELA DE LOGIN -->
+        <div id="auth-screen">
+            <div class="header-title">BY: SPARTAN</div>
+            <p style="color: var(--text-muted); font-size: 13px;">SISTEMA DE ACESSO</p>
+            <input type="text" id="key-input" class="input-key" placeholder="DIGITE A KEY">
+            <button class="btn-inject" style="background: linear-gradient(90deg, var(--accent-purple), var(--accent-blue))" onclick="verifyKey()">ENTRAR</button>
+            <p id="error-msg" style="color: #ff4d4d; font-size: 11px; margin-top: 15px;"></p>
+            <p style="margin-top: 10px; font-size: 10px; color: #333;">KEY ATUAL: <span id="hint-key"></span></p>
+        </div>
+
+        <!-- PAINEL PRINCIPAL -->
+        <div id="main-panel" class="hidden">
+            <div class="header-title">BY: SPARTAN</div>
+
+            <div class="tabs">
+                <div id="tab-aim" class="tab-btn tab-active" onclick="switchTab('aim')">AIMLOCK</div>
+                <div id="tab-info" class="tab-btn tab-inactive" onclick="switchTab('info')">INFO</div>
+            </div>
+
+            <!-- ABA AIMLOCK -->
+            <div id="content-aim">
+                <div class="grid grid-cols-2 gap-4 mb-8">
+                    <div class="checkbox-item" onclick="toggleOption(this)">
+                        <div class="custom-check"></div> <span>AIMBOT</span>
+                    </div>
+                    <div class="checkbox-item" onclick="toggleOption(this)">
+                        <div class="custom-check"></div> <span>No Recoil</span>
+                    </div>
+                    <div class="checkbox-item" onclick="toggleOption(this)">
+                        <div class="custom-check"></div> <span>AIMBOT 2X</span>
+                    </div>
+                    <div class="checkbox-item" onclick="toggleOption(this)">
+                        <div class="custom-check"></div> <span>BYPASS</span>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <input type="range" class="w-full accent-white h-1" value="15">
+                    <div class="flex justify-between mt-2 text-[10px] color-[#a0a0a0]">
+                        <span>Sensibilidade</span>
+                        <span>Fov5%</span>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <p class="text-[#8c52ff] font-bold text-sm mb-4">funções:</p>
+                    <div class="flex justify-center gap-8">
+                        <div class="radio-item" onclick="setRadio(0)">
+                            <div class="radio-circle selected" id="rad-0"><div class="radio-dot"></div></div>
+                            <span class="text-xs font-bold">AO ATIRA</span>
+                        </div>
+                        <div class="radio-item" onclick="setRadio(1)">
+                            <div class="radio-circle" id="rad-1"><div class="radio-dot"></div></div>
+                            <span class="text-xs font-bold">AO OLHA</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ABA INFO -->
+            <div id="content-info" class="hidden">
+                <div class="info-box">
+                    <div class="info-row"><span>Criador:</span> <strong>Spartan</strong></div>
+                    <div class="info-row"><span>Key:</span> <strong id="used-key" style="color:var(--accent-blue)">-</strong></div>
+                    <div class="info-row"><span>Status:</span> <span class="status-on">ONLINE</span></div>
+                    <div class="info-row"><span>Device:</span> <span id="device-info">Android/iOS</span></div>
+                </div>
+            </div>
+
+            <button class="btn-inject" onclick="launchGame()">INJETAR</button>
+        </div>
+    </div>
+
+    <script>
+        // Gerador de Key
+        const randomKey = "SPARTAN-" + Math.random().toString(36).substring(2, 7).toUpperCase();
+        document.getElementById('hint-key').innerText = randomKey;
+
+        function verifyKey() {
+            const val = document.getElementById('key-input').value.trim();
+            if (val === randomKey) {
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('main-panel').classList.remove('hidden');
+                document.getElementById('used-key').innerText = randomKey;
+            } else {
+                const err = document.getElementById('error-msg');
+                err.innerText = "CHAVE INCORRETA!";
+                setTimeout(() => err.innerText = "", 2000);
+            }
+        }
+
+        // Alternar Tabs
+        function switchTab(target) {
+            document.getElementById('content-aim').classList.toggle('hidden', target !== 'aim');
+            document.getElementById('content-info').classList.toggle('hidden', target !== 'info');
+            document.getElementById('tab-aim').className = `tab-btn ${target === 'aim' ? 'tab-active' : 'tab-inactive'}`;
+            document.getElementById('tab-info').className = `tab-btn ${target === 'info' ? 'tab-active' : 'tab-inactive'}`;
+        }
+
+        // Ativar/Desativar Opções
+        function toggleOption(el) {
+            el.classList.toggle('active');
+            const check = el.querySelector('.custom-check');
+            check.innerHTML = el.classList.contains('active') ? '✓' : '';
+            check.style.color = "white";
+            check.style.fontSize = "12px";
+        }
+
+        // Seleção de Funções
+        function setRadio(index) {
+            document.getElementById('rad-0').classList.toggle('selected', index === 0);
+            document.getElementById('rad-1').classList.toggle('selected', index === 1);
+        }
+
+        // Lançar o Jogo
+        function launchGame() {
+            const btn = document.querySelector('.btn-inject');
+            btn.innerText = "INJETANDO...";
+            btn.disabled = true;
+
+            setTimeout(() => {
+                // Tenta abrir o Free Fire (Package Name padrão)
+                // Se estiver no Android, tenta o intent. No iOS, o esquema de URL.
+                window.location.href = "intent://#Intent;scheme=com.dts.freefireth;package=com.dts.freefireth;end";
+                
+                // Fallback para quem não tem intent ou está no iOS
+                setTimeout(() => {
+                    window.location.href = "com.dts.freefireth://";
+                }, 500);
+
+                btn.innerText = "SUCESSO!";
+                setTimeout(() => {
+                    btn.innerText = "INJETAR";
+                    btn.disabled = false;
+                }, 3000);
+            }, 1500);
+        }
+        
+        // Detectar Device Simples
+        document.getElementById('device-info').innerText = /Android/i.test(navigator.userAgent) ? "Android" : "iOS/Web";
+    </script>
+</body>
+</html>
